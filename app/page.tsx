@@ -1,6 +1,9 @@
 "use client";
+import Message from "@/component/message";
+import { Box, Button, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { SSE } from "sse";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 export interface IParameters {
   temperature: number,
@@ -23,7 +26,7 @@ export default function Home() {
   const [parameters, setParameters] = useState<IParameters>();
   const [messages, setMessages] = useState<message[]>([]);
 
-  const url = "";
+  const url = process.env.NEXT_PUBLIC_API_URL!;
 
   const resultRef = useRef<string>();
 
@@ -37,10 +40,6 @@ export default function Home() {
       setResult("");
       const uMessages = [...messages, { role: 'user', content: prompt }];
       setMessages(uMessages);
-      /* const jwtToken = localStorage.getItem(LOCALSTORAGE_CONSTANTS.token);
-      const username = JSON.parse(
-        window.localStorage.getItem(LOCALSTORAGE_CONSTANTS.userName)!
-      ); */
       const data = {
         model: parameters?.model_id,
         messages: uMessages,
@@ -87,9 +86,54 @@ export default function Home() {
     }
   };
 
+  const handlePromptChange = (e: any) => {
+    const input = e.target.value;
+    setPrompt(input);
+  };
+
+  const handleKeyPress = (event: any) => {
+    if (event.key === 'Enter') {
+      handleBtnClick();
+    }
+  };
+
+  const hanldeClearBtnClick = () => {
+    setPrompt("");
+    setResult("");
+    setMessages([]);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', padding: '20px' }}>
+        <div style={{ flexGrow: 1, padding: '10px', height: '65vh', overflow: 'auto' }}>
+          {messages.map((message, index) => (
+            <Box sx={{ marginBottom: '1rem' }} key={index}>
+              <Message sender={message.role} message={message.content} />
+            </Box>
+          ))}
+          {(result != "" && loading) && (
+            <Box sx={{ marginBottom: '1rem' }}>
+              <Message sender="assistant" message={result} />
+            </Box>
+          )}
+        </div>
+        <div style={{ display: "flex", justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* */}
+          <TextField
+            value={prompt}
+            onChange={handlePromptChange}
+            variant="outlined"
+            placeholder="Type here"
+            style={{ flexGrow: 1 }}
+            onKeyPress={handleKeyPress}
+          ></TextField>
+          <Button variant="contained" onClick={handleBtnClick} sx={{ marginLeft: "1rem" }} type="submit">
+            {loading ? <CircularProgress size="1.2rem" color='secondary' style={{ marginRight: '5px' }} /> : <PlayArrowIcon color='secondary' style={{ marginRight: '5px' }} />}
+            {loading ? 'Generating' : 'Submit'}</Button>
+          <Button onClick={hanldeClearBtnClick} sx={{ marginLeft: "1rem" }} disabled={loading}>Clear</Button>
+        </div>
+      </div>
     </main>
   );
 }
