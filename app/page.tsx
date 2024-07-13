@@ -104,9 +104,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', padding: '20px' }}>
-        <div style={{ flexGrow: 1, padding: '10px', height: '65vh', overflow: 'auto' }}>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 w-full" >
+      <div className="min-w-full flex flex-col justify-between h-full p-20px">
+        <div style={{ height: '65vh', overflow: 'auto' }} className="p-10px grow">
           {messages.map((message, index) => (
             <Box sx={{ marginBottom: '1rem' }} key={index}>
               <Message sender={message.role} message={message.content} />
@@ -118,7 +118,7 @@ export default function Home() {
             </Box>
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="flex justify-between items-center">
           {/* */}
           <TextField
             value={prompt}
